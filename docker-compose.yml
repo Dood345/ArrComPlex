@@ -1,0 +1,202 @@
+services:
+  # Download Client
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent:latest
+    container_name: qbittorrent
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Chicago
+      - WEBUI_PORT=8080
+    volumes:
+      - C:/Users/dood3/dockerComPlex/qbittorrent:/config
+      - S:/Downloads:/downloads
+    ports:
+      - "8080:8080"
+      - "6881:6881"
+      - "6881:6881/udp"
+    restart: unless-stopped
+    networks:
+      - media-network
+
+  # Cloudflare workaround for indexer
+  flaresolverr:
+    image: ghcr.io/flaresolverr/flaresolverr:latest
+    container_name: flaresolverr
+    environment:
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+      - LOG_HTML=${LOG_HTML:-false}
+      - CAPTCHA_SOLVER=${CAPTCHA_SOLVER:-none}
+      - TZ=America/Chicago
+    ports:
+      - "8191:8191"
+    restart: unless-stopped 
+    networks:
+      - media-network
+
+  # Indexer Manager (Using Prowlarr instead of Jackett)
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:latest
+    container_name: prowlarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Chicago
+    volumes:
+      - C:/Users/dood3/dockerComPlex/prowlarr:/config
+    ports:
+      - "9696:9696"
+    depends_on:
+      - flaresolverr
+    restart: unless-stopped
+    networks:
+      - media-network
+
+  # TV Shows Management
+  sonarr:
+    image: lscr.io/linuxserver/sonarr:latest
+    container_name: sonarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Chicago
+    volumes:
+      - C:/Users/dood3/dockerComPlex/sonarr:/config
+      - S:/My Videos/My Shows:/shows
+      - S:/Downloads:/downloads
+    ports:
+      - "8989:8989"
+    depends_on:
+      - qbittorrent
+      - prowlarr
+    restart: unless-stopped
+    networks:
+      - media-network
+
+  # Movies Management
+  radarr:
+    image: lscr.io/linuxserver/radarr:latest
+    container_name: radarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Chicago
+    volumes:
+      - C:/Users/dood3/dockerComPlex/radarr:/config
+      - S:/My Videos/My Movies:/movies
+      - S:/Downloads:/downloads
+    ports:
+      - "7878:7878"
+    depends_on:
+      - qbittorrent
+      - prowlarr
+    restart: unless-stopped
+    networks:
+      - media-network
+
+  # Music Management
+  lidarr:
+    image: lscr.io/linuxserver/lidarr:latest
+    container_name: lidarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Chicago
+    volumes:
+      - C:/Users/dood3/dockerComPlex/lidarr:/config
+      - S:/My Music:/music
+      - S:/Downloads:/downloads
+    ports:
+      - "8686:8686"
+    depends_on:
+      - qbittorrent
+      - prowlarr
+    restart: unless-stopped
+    networks:
+      - media-network
+
+  # # Subtitle Management
+  # bazarr:
+  #   image: lscr.io/linuxserver/bazarr:latest
+  #   container_name: bazarr
+  #   environment:
+  #     - PUID=1000
+  #     - PGID=1000
+  #     - TZ=America/Chicago
+  #   volumes:
+  #     - C:/Users/dood3/dockerComPlex/bazarr:/config
+  #     - S:/My Videos/My Shows:/tv
+  #     - S:/My Videos/My Movies:/movies
+  #   ports:
+  #     - "6767:6767"
+  #   depends_on:
+  #     - sonarr
+  #     - radarr
+  #   restart: unless-stopped
+  #   networks:
+  #     - media-network
+
+  # Optional: Books/Audiobooks Management
+  readarr: 
+    image: lscr.io/linuxserver/readarr:0.4.18-develop 
+    container_name: readarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Chicago
+    volumes:
+      - C:/Users/dood3/dockerComPlex/readarr:/config
+      - S:/My Books:/books  # You'll need to create this folder
+      - S:/Downloads:/downloads
+    ports:
+      - "8787:8787"
+    depends_on:
+      - qbittorrent
+      - prowlarr
+    restart: unless-stopped
+    networks:
+      - media-network
+
+  # Audiobook Server
+  audiobookshelf:
+    image: ghcr.io/advplyr/audiobookshelf:latest
+    container_name: audiobookshelf
+    environment:
+      - PUID=1000
+      - PGID=1000
+    volumes:
+      - C:/Users/dood3/dockerComPlex/audiobookshelf:/config
+      - C:/Users/dood3/dockerComPlex/audiobookshelf/metadata:/metadata
+      - S:/My Books/Audiobooks:/audiobooks
+      - S:/My Books/Podcasts:/podcasts
+      - S:/My Books:/books  # For ebooks if you want them accessible here too
+    ports:
+      - "13378:80"
+    depends_on:
+      - readarr
+    restart: unless-stopped
+    networks:
+      - media-network
+
+  # Request Management Interface
+  overseerr:
+    image: lscr.io/linuxserver/overseerr:latest
+    container_name: overseerr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Chicago
+    volumes:
+      - C:/Users/dood3/dockerComPlex/overseerr:/config
+    ports:
+      - "5055:5055"
+    depends_on:
+      - sonarr
+      - radarr
+    restart: unless-stopped
+    networks:
+      - media-network
+
+networks:
+  media-network:
+    driver: bridge
