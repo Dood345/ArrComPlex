@@ -136,47 +136,45 @@ services:
   #   networks:
   #     - media-network
 
-  # Optional: Books/Audiobooks Management
-  readarr: 
-    image: lscr.io/linuxserver/readarr:0.4.18-develop 
-    container_name: readarr
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=America/Chicago
-    volumes:
-      - C:/Users/dood3/dockerComPlex/readarr:/config
-      - S:/My Books:/books  # You'll need to create this folder
-      - S:/Downloads:/downloads
-    ports:
-      - "8787:8787"
-    depends_on:
-      - qbittorrent
-      - prowlarr
-    restart: unless-stopped
-    networks:
-      - media-network
+  # Books/Audiobooks Management - REPLACED READARR WITH LAZYLIBRARIAN
+  # readarrhardcover:
+  #   image: ghcr.io/pennydreadful/bookshelf:hardcover-v0.4.20.91
+  #   container_name: readarrhardcover
+  #   environment:
+  #     - PUID=1000
+  #     - PGID=1000
+  #     - TZ=America/Chicago
+  #   volumes:
+  #     - C:/Users/dood3/dockerComPlex/readarr:/config
+  #     - S:/My Books:/books
+  #     - S:/Downloads:/downloads
+  #   ports:
+  #     - "8787:8787"
+  #   depends_on:
+  #     - qbittorrent
+  #     - prowlarr
+  #   restart: unless-stopped
+  #   networks:
+  #     - media-network
 
   # Audiobook Server
-  audiobookshelf:
-    image: ghcr.io/advplyr/audiobookshelf:latest
-    container_name: audiobookshelf
-    environment:
-      - PUID=1000
-      - PGID=1000
-    volumes:
-      - C:/Users/dood3/dockerComPlex/audiobookshelf:/config
-      - C:/Users/dood3/dockerComPlex/audiobookshelf/metadata:/metadata
-      - S:/My Books/Audiobooks:/audiobooks
-      - S:/My Books/Podcasts:/podcasts
-      - S:/My Books:/books  # For ebooks if you want them accessible here too
-    ports:
-      - "13378:80"
-    depends_on:
-      - readarr
-    restart: unless-stopped
-    networks:
-      - media-network
+  # audiobookshelf:
+  #   image: ghcr.io/advplyr/audiobookshelf:latest
+  #   container_name: audiobookshelf
+  #   environment:
+  #     - PUID=1000
+  #     - PGID=1000
+  #   volumes:
+  #     - C:/Users/dood3/dockerComPlex/audiobookshelf:/config
+  #     - C:/Users/dood3/dockerComPlex/audiobookshelf/metadata:/metadata
+  #     - S:/My Books:/books
+  #   ports:
+  #     - "13378:80"
+  #   depends_on:
+  #     - readarrhardcover
+  #   restart: unless-stopped
+  #   networks:
+  #     - media-network
 
   # Request Management Interface
   overseerr:
