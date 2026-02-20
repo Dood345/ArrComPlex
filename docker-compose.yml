@@ -115,28 +115,46 @@ services:
     networks:
       - media-network
 
-  # # Subtitle Management
-  # bazarr:
-  #   image: lscr.io/linuxserver/bazarr:latest
-  #   container_name: bazarr
-  #   environment:
-  #     - PUID=1000
-  #     - PGID=1000
-  #     - TZ=America/Chicago
-  #   volumes:
-  #     - C:/Users/dood3/dockerComPlex/bazarr:/config
-  #     - S:/My Videos/My Shows:/tv
-  #     - S:/My Videos/My Movies:/movies
-  #   ports:
-  #     - "6767:6767"
-  #   depends_on:
-  #     - sonarr
-  #     - radarr
-  #   restart: unless-stopped
-  #   networks:
-  #     - media-network
+  slskd:
+    image: slskd/slskd
+    container_name: slskd
+    ports:
+      - "5030:5030"
+      - "5031:5031"
+      - "50300:50300"
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - SLSKD_UMASK=022
+      - SLSKD_REMOTE_CONFIGURATION=true
+      - TZ=America/Chicago
+    volumes:
+      - C:/Users/dood3/dockerComPlex/slskd:/app/config
+      - S:/Downloads:/downloads
+    restart: always
+    networks:
+      - media-network
 
-  # Books/Audiobooks Management - REPLACED READARR WITH LAZYLIBRARIAN
+  soularr:
+    image: mrusse08/soularr:latest
+    container_name: soularr
+    hostname: soularr
+    ports:
+      - "6969:6969"
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Chicago
+      - SCRIPT_INTERVAL=300 # Script interval in seconds
+    volumes:
+      - S:/Downloads:/downloads
+      - C:/Users/dood3/dockerComPlex/soularr:/data
+    restart: unless-stopped
+    networks:
+      - media-network
+
+
+  # Books/Audiobooks Management - NO REPLACEMENT, MANUAL GATHERING WITH ANNES ARCHIVE
   # readarrhardcover:
   #   image: ghcr.io/pennydreadful/bookshelf:hardcover-v0.4.20.91
   #   container_name: readarrhardcover
@@ -157,24 +175,24 @@ services:
   #   networks:
   #     - media-network
 
-  # Audiobook Server
-  # audiobookshelf:
-  #   image: ghcr.io/advplyr/audiobookshelf:latest
-  #   container_name: audiobookshelf
-  #   environment:
-  #     - PUID=1000
-  #     - PGID=1000
-  #   volumes:
-  #     - C:/Users/dood3/dockerComPlex/audiobookshelf:/config
-  #     - C:/Users/dood3/dockerComPlex/audiobookshelf/metadata:/metadata
-  #     - S:/My Books:/books
-  #   ports:
-  #     - "13378:80"
-  #   depends_on:
-  #     - readarrhardcover
-  #   restart: unless-stopped
-  #   networks:
-  #     - media-network
+  #Audiobook Server
+  audiobookshelf:
+    image: ghcr.io/advplyr/audiobookshelf:latest
+    container_name: audiobookshelf
+    environment:
+      - PUID=1000
+      - PGID=1000
+    volumes:
+      - C:/Users/dood3/dockerComPlex/audiobookshelf:/config
+      - C:/Users/dood3/dockerComPlex/audiobookshelf/metadata:/metadata
+      - S:/My Books:/books
+    ports:
+      - "13378:80"
+    # depends_on:
+    #   - readarrhardcover
+    restart: unless-stopped
+    networks:
+      - media-network
 
   # Request Management Interface
   overseerr:

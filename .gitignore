@@ -7,3 +7,6 @@ qbittorrent/
 radarr/
 readarr/
 sonarr/
+soularr/
+slskd/
+.env
