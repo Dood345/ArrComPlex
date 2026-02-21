@@ -126,7 +126,8 @@ services:
       - PUID=1000
       - PGID=1000
       - SLSKD_UMASK=022
-      - SLSKD_REMOTE_CONFIGURATION=true
+      - DOTNET_USE_POLLING_FILE_WATCHER=1
+      - SLSKD_REMOTE_CONFIGURATION=false
       - TZ=America/Chicago
     volumes:
       - C:/Users/dood3/dockerComPlex/slskd:/app/config
@@ -195,15 +196,16 @@ services:
       - media-network
 
   # Request Management Interface
-  overseerr:
-    image: lscr.io/linuxserver/overseerr:latest
-    container_name: overseerr
+  seerr:
+    image: ghcr.io/seerr-team/seerr:latest
+    container_name: seerr
+    init: true
     environment:
       - PUID=1000
       - PGID=1000
       - TZ=America/Chicago
     volumes:
-      - C:/Users/dood3/dockerComPlex/overseerr:/config
+      - C:/Users/dood3/dockerComPlex/overseerr:/app/config
     ports:
       - "5055:5055"
     depends_on:

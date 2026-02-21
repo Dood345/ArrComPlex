@@ -17,7 +17,7 @@ The following services are bundled in this Docker Compose setup:
 | **[Slskd](https://github.com/slskd/slskd)** | 5030 | Headless Soulseek client for downloading rare/lossless music. |
 | **[Soularr](https://github.com/mrusse/soularr)** | 6969 | Automation script that connects Lidarr to Slskd. |
 | **[Audiobookshelf](https://www.audiobookshelf.org/)** | 13378 | Self-hosted server for streaming audiobooks and podcasts. |
-| **[Overseerr](https://overseerr.dev/)** | 5055 | Request management and media discovery portal. |
+| **[Seerr](https://seerr.dev/)** | 5055 | Request management and media discovery portal. |
 
 > **Note on Books:** Book management is currently handled via manual gathering (e.g., using Anna's Archive). Audiobooks are served through Audiobookshelf.
 
@@ -91,7 +91,7 @@ Once running, access your web interfaces locally:
 * **Lidarr:** `http://localhost:8686`
 * **Slskd:** `http://localhost:5030`
 * **Audiobookshelf:** `http://localhost:13378`
-* **Overseerr:** `http://localhost:5055`
+* **Seerr:** `http://localhost:5055`
 
 ## License
 
