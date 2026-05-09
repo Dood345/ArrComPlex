@@ -115,6 +115,7 @@ services:
     networks:
       - media-network
 
+  # Music Indexer/Downloader
   slskd:
     image: slskd/slskd
     container_name: slskd
@@ -135,6 +136,7 @@ services:
     networks:
       - media-network
 
+  # Connector for lidar to work with Modern Day Napster
   soularr:
     image: mrusse08/soularr:latest
     container_name: soularr
@@ -151,7 +153,6 @@ services:
     restart: unless-stopped
     networks:
       - media-network
-
 
   # Books/Audiobooks Management - NO REPLACEMENT, MANUAL GATHERING WITH ANNES ARCHIVE
   # readarrhardcover:
@@ -174,7 +175,7 @@ services:
   #   networks:
   #     - media-network
 
-  #Audiobook Server
+  # AudiobookUI Server
   audiobookshelf:
     image: ghcr.io/advplyr/audiobookshelf:latest
     container_name: audiobookshelf
