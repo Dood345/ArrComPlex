@@ -130,9 +130,9 @@ services:
       - SLSKD_REMOTE_CONFIGURATION=false
       - TZ=America/Chicago
     volumes:
-      - C:/Users/dood3/dockerComPlex/slskd:/app/config
+      - C:/Users/dood3/dockerComPlex/slskd:/app
       - S:/Downloads:/downloads
-    restart: always
+    restart: unless-stopped
     networks:
       - media-network
 
@@ -210,6 +210,21 @@ services:
     depends_on:
       - sonarr
       - radarr
+    restart: unless-stopped
+    networks:
+      - media-network
+
+  # Automatic Container Updates
+  watchtower:
+    image: containrrr/watchtower:latest
+    container_name: watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - TZ=America/Chicago
+      - WATCHTOWER_CLEANUP=true
+      - WATCHTOWER_SCHEDULE=0 0 4 * * *
+      - DOCKER_API_VERSION=1.40
     restart: unless-stopped
     networks:
       - media-network
